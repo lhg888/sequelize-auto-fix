@@ -113,32 +113,27 @@ class AutoBuilder {
     mapTable(table) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const fields = yield this.queryInterface.describeTable(table.table_name, table.table_schema);
-                console.log('fields:', fields);
+                const fields = yield this.queryInterface.describeTable(table.table_name, table.table_schema);                
                 this.tableData.tables[makeTableQName(table)] = fields;
                 // for postgres array or user-defined types, get element type
                 if (this.dialect.showElementTypeQuery && (lodash_1.default.some(fields, { type: "ARRAY" }) || lodash_1.default.some(fields, { type: "USER-DEFINED" }))) {
                     // get the subtype of the fields
                     const stquery = this.dialect.showElementTypeQuery(table.table_name, table.table_schema);
-                    const elementTypes = yield this.executeQuery(stquery);
-                    console.log('elementTypes:', elementTypes, 'stquery:', stquery);
+                    const elementTypes = yield this.executeQuery(stquery);                    
                     // add element type to "elementType" property of field
                     elementTypes.forEach(et => {
-                        const fld = fields[et.column_name];
-                        console.log('et:', et, 'fld:', fld);
+                        const fld = fields[et.column_name];                        
                         if (fld.type === "ARRAY") {
                             fld.elementType = et.element_type;
                             if (et.element_type === "USER-DEFINED" && et.enum_values && !fld.special.length) {
                                 fld.elementType = "ENUM";
                                 // fromArray is a method defined on Postgres QueryGenerator only
-                                fld.special = this.queryInterface.queryGenerator.fromArray(et.enum_values);
-                                console.log('fld.special:', fld.special, 'column:', et.column_name);
+                                fld.special = this.queryInterface.queryGenerator.fromArray(et.enum_values);                                
                             }
                         }
                         else if (fld.type === "USER-DEFINED") {
                             fld.type = !fld.special.length ? et.udt_name : "ENUM";
-                            fld.special = this.queryInterface.queryGenerator.fromArray(et.enum_values);
-                            console.log('22fld.special:', fld.special, 'column:', et.column_name);
+                            fld.special = this.queryInterface.queryGenerator.fromArray(et.enum_values);                            
                         }
                     });
                     // TODO - in postgres, query geography_columns and geometry_columns for detail type and srid
